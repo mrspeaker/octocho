@@ -8,5 +8,12 @@ var utils = {
                 configurable: true
             }
         });
+    },
+
+    mouse2Space: function (e) {
+        return [
+            (e.clientX / window.innerWidth) * 2 - 1,
+            -(e.clientY / window.innerHeight) * 2 + 1
+        ];
     }
 };

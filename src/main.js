@@ -1,108 +1,46 @@
 var octocho = {
     cubes: [],
-    peeps: [],
-    lastI: 0,
-    lastMove: Date.now(),
+    cubeMeshes: [],
     init: function (dom) {
 
-        this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 100); //THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, 1, 1000 );
-        this.camera.position.y = 0;
-        this.camera.position.x = -3;
-        this.camera.position.z = 5;
-
-        this.camera.rotation.y = -35 * (Math.PI / 180);
+        this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 100);
+        this.camera.position.set(3.3, 1.2, 4);
+        this.camera.rotation.set(-0.3, 0.67, 0.18);
 
         this.controls = new THREE.OrbitControls(this.camera);
-        this.controls.addEventListener('change', function () {
-            octocho.lastMove = Date.now();
-        });
 
-        this.scene = new THREE.Scene();
+        this.bindInput();
+        this.makeAScene();
 
-        var plane = new THREE.Mesh(
-            new THREE.PlaneGeometry(50, 50),
-            new THREE.MeshBasicMaterial({color: 0x001300})
-        );
-        plane.position.y = -5;
-        plane.position.x = 0;
-        plane.position.z = 0;
-        plane.rotation.x = -90 * (Math.PI / 180);
-        //this.scene.add(plane);
-
-        var materials = [];
-        for ( var i = 0; i < 6; i ++ ) {
-            materials.push( new THREE.MeshBasicMaterial( {
-                map: THREE.ImageUtils.loadTexture( 'res/mouse.png'),
-                transparent: false
-            } ) );
-        }
-
-        for (var k = 0; k < 3; k++) {
-            for (var j = 0; j < 3; j++) {
-                for (var i = 0; i < 3; i++) {
-                    if (i === 1 && j === 1 && k ===1) continue;
-                    //if (Math.random() < 0.3) continue;
-                    var c = new THREE.Color();
-                    c.setHSL((k * 3 + j * 3 + i) / 27, 0.8, Math.random());
-                    var cube = new THREE.Object3D();
-
-                    var cubeMesh = new THREE.Mesh(new THREE.CubeGeometry(1, 1, 1), new THREE.MeshBasicMaterial({transparent: true, color: c, wireframe: true, opacity: 0.1 }));
-                    cube.position.x = (i - 1) * 1;
-                    cube.position.y = (j - 1) * 1;
-                    cube.position.z = (k - 1) * 1;
-
-                    var plane = new THREE.Mesh(
-                        new THREE.PlaneGeometry(1, 1),
-                        new THREE.MeshBasicMaterial({color: c})
-                    );
-                    plane.position.y = -0.5;
-                    plane.rotation.x = -90 * (Math.PI / 180);
-                    cube.add(plane);
-
-                    var plane2 = new THREE.Mesh(
-                        new THREE.PlaneGeometry(1, 1),
-                        new THREE.MeshBasicMaterial({color: c})
-                    );
-                    plane2.position.y = -0.5;
-                    plane2.rotation.x = 90 * (Math.PI / 180);
-                    cube.add(plane2);
-
-                    var peep = new Peep();
-                    var c2 = new THREE.Mesh(
-                        new THREE.CubeGeometry(peep.w, peep.h, peep.w),
-                        new THREE.MeshLambertMaterial({color: c})
-                    );
-                    peep.init(c2);
-
-                    this.peeps.push(peep);
-                    cube.add(cubeMesh);
-                    cube.add(c2);
-
-                    this.scene.add(cube);
-                    this.cubes.push(cube);
-
-                }
-            }
-        }
-
-        var ambientLight = new THREE.AmbientLight(0x774444);
-        this.scene.add(ambientLight);
-
-        var directionalLight = new THREE.DirectionalLight(0xffffff);
-        directionalLight.position.set(0.1, 0.3, 0.1).normalize();
-        this.scene.add(directionalLight);
-
+        // Add the renderer
         this.renderer = new THREE.WebGLRenderer();
-        this.renderer.setSize( window.innerWidth, window.innerHeight );
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        (dom ? dom : document.getElementById("board")).appendChild(this.renderer.domElement);
 
-        if (dom) {
-            dom.appendChild(this.renderer.domElement);
-        } else {
-            document.getElementById("board").appendChild(this.renderer.domElement);
-        }
+        // for performing world/screen calculations
+        this.projector = new THREE.Projector();
+
         this.run();
 
     },
+
+    bindInput: function () {
+
+        var self = this;
+
+        this.controls.addEventListener('change', function (c) {});
+
+        document.addEventListener("click", function (e) {
+            var pos = utils.mouse2Space(e),
+                hit = self.rayCast(pos[0], pos[1]);
+
+            if (hit.length) {
+                self.rotateCube(hit);
+            }
+        }, false);
+
+    },
+
     run: function () {
 
         this.update();
@@ -117,36 +55,71 @@ var octocho = {
 
         this.controls.update();
 
-        this.cubes.forEach(function(c, i) {
-            if (((Date.now() / 3000 % 27) | 0) === i) {
-                if (i !== this.lastI) {
-                    if (this.cubes[this.lastI]) {
-                        this.cubes[this.lastI].rotation.x = 0;
-                        this.cubes[this.lastI].rotation.y = 0;
-                    }
-                    this.lastI = i;
+        this.cubes.forEach(function(c) {
+            c.tick();
+        });
+    },
 
-                }
-                if (((Date.now() / 3000 % 2) | 0) === 1) {
-                    c.rotation.y += 0.05;// * (i % 4);
-                }
-                else {
-                    c.rotation.x += 0.05;// * (i % 4);
+    makeAScene: function () {
+
+        this.scene = new THREE.Scene();
+
+        var materials = [];
+        for ( var i = 0; i < 6; i ++ ) {
+            materials.push( new THREE.MeshBasicMaterial( {
+                map: THREE.ImageUtils.loadTexture( 'res/mouse.png'),
+                transparent: false
+            } ) );
+        }
+
+        for (var k = 0; k < 3; k++) {
+            for (var j = 0; j < 3; j++) {
+                for (var i = 0; i < 3; i++) {
+                    if (i === 1 && j === 1 && k ===1) continue;
+                    //if (Math.random() < 0.3) continue;
+                    var col = geom.colHSL((k * 3 + j * 3 + i) / 27, 0.8, Math.random()),
+                        cube = new Cube(col).init(i - 1, j - 1, k - 1);
+
+                    cube.addPeep(new Peep(col).init());
+
+                    this.cubes.push(cube);
+                    this.cubeMeshes.push(cube.mesh);
+
+                    this.scene.add(cube.mesh);
+
                 }
             }
-            //c.rotation.x += 0.002;// * (i % 4);
-        }, this);
+        }
 
-        this.peeps.forEach(function (p) {
-            //p.position.x += (Math.random() - 0.5) * 0.02;
-            p.tick();
-        });
+        var ambientLight = new THREE.AmbientLight(0x774444);
+        this.scene.add(ambientLight);
+
+        var directionalLight = new THREE.DirectionalLight(0xffffff);
+        directionalLight.position.set(0.1, 0.3, 0.1).normalize();
+        this.scene.add(directionalLight);
+
+    },
+
+    rotateCube: function (hit) {
+        if (hit[0].object.userData.cube) {
+            hit[0].object.userData.cube.rotZ += (90 * (Math.PI / 180)) % (Math.PI * 2);
+        }
+    },
+
+    rayCast: function (x, y) {
+        var vector = geom.vec3(x, y, 0.5),
+            ray,
+            intersects;
+        this.projector.unprojectVector(vector, this.camera);
+        ray = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
+        intersects = ray.intersectObjects(this.cubeMeshes, true);
+
+        return intersects;
     },
 
     render: function () {
 
         this.renderer.render(this.scene, this.camera);
 
-        //this.camera.position.y += ((Math.sin(Date.now() / 1000) - 0.5 ) * 2) / 100;
     }
 };

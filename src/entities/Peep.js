@@ -1,23 +1,26 @@
-function Peep() {
+function Peep(col) {
     this.x = 0;
     this.y = 0;
     this.z = 0;
+
+    this.col = col;
 
     this.w = 0.05;
     this.h = 0.1;
 
     this.dir = 0;
-
-    this.obj = null;
+    this.mesh = null;
 };
 
 Peep.prototype = {
-    init: function (obj) {
-        this.y = -0.5 + (this.h / 2);
+    init: function () {
+        this.y = -0.5 + (this.h / 2) + 0.001;
 
         this.dir = Math.random() * 360 | 0;
         this.speed = (Math.random() * 0.003) + 0.001;
-        this.obj = obj;
+        this.mesh = geom.peep(this);
+
+        return this;
     },
 
     tick: function () {
@@ -36,9 +39,7 @@ Peep.prototype = {
     },
 
     sync: function () {
-        this.obj.position.x = this.x;
-        this.obj.position.y = this.y;
-        this.obj.position.z = this.z;
+        this.mesh.position.set(this.x, this.y, this.z);
     }
 }
 
