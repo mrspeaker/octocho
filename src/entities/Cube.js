@@ -11,23 +11,23 @@ function Cube(col) {
 Cube.prototype = {
 
     init: function (x, y, z) {
-        var cubey = geom.basicCube(this.col)
+        //var cubey = geom.basicCube(this.col)
         this.mesh = geom.container(geom.vec3(x, y, z));
-        this.mesh.add(cubey);
+        //this.mesh.add(cubey);
+        //cubey.userData.cube = this;
 
-        cubey.userData.cube = this;
+        var o = "path" + ((Math.random() * 3 | 0) + 1),
+            mats = ["pathEdge", "pathEdge", o, o, "pathEdge", "pathEdge"].map(function (m) {
+                return new THREE.MeshBasicMaterial({
+                    map: octocho.materials[m]
+                });
+            });
 
-        //console.log(this.mesh.userData)
-
-        // Add the planes
-        var plane = geom.basicPlane(this.col);
+        var plane = geom.basicCube2(this.col, mats);
         plane.position.y = -0.5;
-        plane.rotation.x = -90 * (Math.PI / 180);
         this.mesh.add(plane);
-        plane = geom.basicPlane(this.col);
-        plane.position.y = -0.5;
-        plane.rotation.x = 90 * (Math.PI / 180);
-        this.mesh.add(plane);
+        this.base = plane;
+        plane.userData.cube = this;
 
         return this;
     },

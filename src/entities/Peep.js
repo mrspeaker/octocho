@@ -13,8 +13,9 @@ function Peep(col) {
 };
 
 Peep.prototype = {
+
     init: function () {
-        this.y = -0.5 + (this.h / 2) + 0.001;
+        this.y = -0.45 + (this.h / 2) + 0.001;
 
         this.dir = Math.random() * 360 | 0;
         this.speed = (Math.random() * 0.003) + 0.001;

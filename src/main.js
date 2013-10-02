@@ -1,6 +1,9 @@
 var octocho = {
     cubes: [],
     cubeMeshes: [],
+
+    downAt: null,
+
     init: function (dom) {
 
         this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 100);
@@ -11,6 +14,9 @@ var octocho = {
 
         this.bindInput();
         this.makeAScene();
+
+        this.scene.fog = new THREE.Fog(0x000000, 3, 10);
+        this.scene.fog.color.setHSL(0.51, 0.1, 0.2);
 
         // Add the renderer
         this.renderer = new THREE.WebGLRenderer();
@@ -30,7 +36,16 @@ var octocho = {
 
         this.controls.addEventListener('change', function (c) {});
 
+        document.addEventListener("mousedown", function (e) {
+            self.downAt = Date.now();
+        });
+
         document.addEventListener("click", function (e) {
+
+            if (Date.now() - self.downAt > 300) {
+                return;
+            }
+
             var pos = utils.mouse2Space(e),
                 hit = self.rayCast(pos[0], pos[1]);
 
@@ -66,24 +81,49 @@ var octocho = {
 
         var materials = [];
         for ( var i = 0; i < 6; i ++ ) {
-            materials.push( new THREE.MeshBasicMaterial( {
+            materials.push(new THREE.MeshBasicMaterial({
                 map: THREE.ImageUtils.loadTexture( 'res/mouse.png'),
                 transparent: false
-            } ) );
+            }));
+        }
+
+        this.materials = {
+            path1: THREE.ImageUtils.loadTexture('res/path-1.png'),
+            path2: THREE.ImageUtils.loadTexture('res/path-2.png'),
+            path3: THREE.ImageUtils.loadTexture('res/path-3.png'),
+            pathEdge: THREE.ImageUtils.loadTexture('res/path-edge.png'),
+            ladder: THREE.ImageUtils.loadTexture('res/ladder.png')
+        };
+
+        //this.nm = THREE.ImageUtils.loadTexture("res/path-1-nm.png");
+
+
+
+
+        this.materials.ladder.wrapS = THREE.RepeatWrapping;
+        this.materials.ladder.repeat.y = 1;
+
+        for (var m in this.materials) {
+            this.materials[m].minFilter = THREE.LinearMipMapLinearFilter;
+            this.materials[m].magFilter = THREE.NearestFilter;
         }
 
         for (var k = 0; k < 3; k++) {
             for (var j = 0; j < 3; j++) {
                 for (var i = 0; i < 3; i++) {
-                    if (i === 1 && j === 1 && k ===1) continue;
-                    //if (Math.random() < 0.3) continue;
+
                     var col = geom.colHSL((k * 3 + j * 3 + i) / 27, 0.8, Math.random()),
                         cube = new Cube(col).init(i - 1, j - 1, k - 1);
 
                     cube.addPeep(new Peep(col).init());
 
+                    if (j < 2 && Math.random() < 0.2) {
+                        var ladder = new Ladder().init();
+                        cube.mesh.add(ladder.mesh);
+                    }
+
                     this.cubes.push(cube);
-                    this.cubeMeshes.push(cube.mesh);
+                    this.cubeMeshes.push(cube.base);
 
                     this.scene.add(cube.mesh);
 
