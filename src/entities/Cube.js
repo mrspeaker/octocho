@@ -42,7 +42,16 @@ Cube.prototype = {
             p.tick();
         });
 
+        if (this.rotating-- > 0) {
+            this.rotZ += this.rotateAmount;
+        }
+
         this.sync();
+    },
+
+    rotate: function () {
+        this.rotating = 10;
+        this.rotateAmount = ((90 / this.rotating) * (Math.PI / 180)) % (Math.PI * 2);
     },
 
     sync: function () {

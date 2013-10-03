@@ -73,7 +73,7 @@ var geom = {
         //normalMap: uniforms[ "tNormal" ].value
         */
         return new THREE.Mesh(
-            new THREE.CubeGeometry(1, 0.1, 1, 1, 1, 1),
+            new THREE.CubeGeometry(1, 0.05, 1, 1, 1, 1),
             new THREE.MeshFaceMaterial(mat)
         );
     },

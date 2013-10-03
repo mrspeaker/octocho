@@ -142,7 +142,7 @@ var octocho = {
 
     rotateCube: function (hit) {
         if (hit[0].object.userData.cube) {
-            hit[0].object.userData.cube.rotZ += (90 * (Math.PI / 180)) % (Math.PI * 2);
+            hit[0].object.userData.cube.rotate();
         }
     },
 
