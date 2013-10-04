@@ -7,16 +7,23 @@ var octocho = {
     init: function (dom) {
 
         this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 100);
-        this.camera.position.set(3.3, 1.2, 4);
-        this.camera.rotation.set(-0.3, 0.67, 0.18);
+        //this.camera.position.set(3.3, 1.2, 4);
+        this.camera.position.set(0, 0, 4);
+        //this.camera.rotation.set(-0.3, 0.67, 0.18);
 
         this.controls = new THREE.OrbitControls(this.camera);
+        this.loadMaterials();
+
+        this.level = new Level().init();
+
+        console.log(this.level);
 
         this.bindInput();
         this.makeAScene();
 
         this.scene.fog = new THREE.Fog(0x000000, 3, 10);
         this.scene.fog.color.setHSL(0.51, 0.1, 0.2);
+
 
         // Add the renderer
         this.renderer = new THREE.WebGLRenderer();
@@ -39,6 +46,14 @@ var octocho = {
         document.addEventListener("mousedown", function (e) {
             self.downAt = Date.now();
         });
+        document.addEventListener("contextmenu", function (e) {
+            var pos = utils.mouse2Space(e),
+                hit = self.rayCast(pos[0], pos[1]);
+
+            if (hit.length) {
+                self.rotateCube(hit, true);
+            }
+        }, false);
 
         document.addEventListener("click", function (e) {
 
@@ -69,15 +84,11 @@ var octocho = {
     update: function () {
 
         this.controls.update();
+        this.level.tick();
 
-        this.cubes.forEach(function(c) {
-            c.tick();
-        });
     },
 
-    makeAScene: function () {
-
-        this.scene = new THREE.Scene();
+    loadMaterials: function () {
 
         var materials = [];
         for ( var i = 0; i < 6; i ++ ) {
@@ -92,12 +103,11 @@ var octocho = {
             path2: THREE.ImageUtils.loadTexture('res/path-2.png'),
             path3: THREE.ImageUtils.loadTexture('res/path-3.png'),
             pathEdge: THREE.ImageUtils.loadTexture('res/path-edge.png'),
-            ladder: THREE.ImageUtils.loadTexture('res/ladder.png')
+            ladder: THREE.ImageUtils.loadTexture('res/ladder.png'),
+            nm: THREE.ImageUtils.loadTexture("res/path-1-nm.png")
         };
 
         //this.nm = THREE.ImageUtils.loadTexture("res/path-1-nm.png");
-
-
 
 
         this.materials.ladder.wrapS = THREE.RepeatWrapping;
@@ -108,25 +118,18 @@ var octocho = {
             this.materials[m].magFilter = THREE.NearestFilter;
         }
 
-        for (var k = 0; k < 3; k++) {
-            for (var j = 0; j < 3; j++) {
-                for (var i = 0; i < 3; i++) {
+    },
 
-                    var col = geom.colHSL((k * 3 + j * 3 + i) / 27, 0.8, Math.random()),
-                        cube = new Cube(col).init(i - 1, j - 1, k - 1);
+    makeAScene: function () {
 
-                    cube.addPeep(new Peep(col).init());
+        this.scene = new THREE.Scene();
 
-                    if (j < 2 && Math.random() < 0.2) {
-                        var ladder = new Ladder().init();
-                        cube.mesh.add(ladder.mesh);
-                    }
-
-                    this.cubes.push(cube);
+        for (var x = 0; x < 3; x++) {
+            for (var y = 0; y < 3; y++) {
+                for (var z = 0; z < 3; z++) {
+                    var cube = this.level.cubes[x][y][z];
                     this.cubeMeshes.push(cube.base);
-
                     this.scene.add(cube.mesh);
-
                 }
             }
         }
@@ -140,9 +143,9 @@ var octocho = {
 
     },
 
-    rotateCube: function (hit) {
+    rotateCube: function (hit, blnX) {
         if (hit[0].object.userData.cube) {
-            hit[0].object.userData.cube.rotate();
+            hit[0].object.userData.cube.rotate(blnX);
         }
     },
 

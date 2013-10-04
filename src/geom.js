@@ -45,33 +45,6 @@ var geom = {
     },
 
     basicCube2: function (color, mat) {
-        /*var shader = THREE.ShaderLib["normalmap"];
-        var uniforms = THREE.UniformsUtils.clone( shader.uniforms );
-
-        uniforms[ "enableAO" ].value = true;
-        uniforms[ "enableDiffuse" ].value = false;
-        uniforms[ "enableSpecular" ].value = false;
-        uniforms[ "enableReflection" ].value = true;
-        uniforms[ "enableDisplacement" ].value = true;
-
-        uniforms[ "tNormal" ].value = THREE.ImageUtils.loadTexture("res/path-1-nm.png");
-        uniforms[ "uNormalScale" ].value.y = -1;
-
-        uniforms[ "uDiffuseColor" ].value.setHex(0x331100);
-        uniforms[ "uSpecularColor" ].value.setHex(0xffffff);
-        uniforms[ "uAmbientColor" ].value.setHex(0x050505);
-
-        uniforms[ "uShininess" ].value = 10;
-
-        //uniforms[ "tCube" ].value = reflectionCube;
-        uniforms[ "uReflectivity" ].value = 0.1;
-
-        uniforms[ "uDiffuseColor" ].value.convertGammaToLinear();
-        uniforms[ "uSpecularColor" ].value.convertGammaToLinear();
-        uniforms[ "uAmbientColor" ].value.convertGammaToLinear();
-        //this.materials.normalMap = uniforms[ "tNormal" ].value;
-        //normalMap: uniforms[ "tNormal" ].value
-        */
         return new THREE.Mesh(
             new THREE.CubeGeometry(1, 0.05, 1, 1, 1, 1),
             new THREE.MeshFaceMaterial(mat)
@@ -85,6 +58,17 @@ var geom = {
         );
     },
 
+    cubeCol: function (dims, color) {
+
+        return new THREE.Mesh(
+            new THREE.CubeGeometry(dims.x, dims.y, dims.z),
+            new THREE.MeshPhongMaterial({
+                transparent: true,
+                opacity: 0.7,
+                color: color})
+        );
+    },
+
     cube: function (dims, material) {
 
         return new THREE.Mesh(
@@ -92,7 +76,6 @@ var geom = {
             new THREE.MeshPhongMaterial({
                 transparent: true,
                 map: material
-
             })
         );
     },

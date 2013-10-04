@@ -8,6 +8,9 @@ Ladder.prototype = {
         this.mesh = geom.cube(geom.vec3(0.1, 0.99, 0.1), octocho.materials.ladder);
         return this;
 
-    }
+    },
+
+    tick: function () {},
+    sync: function () {}
 
 };
