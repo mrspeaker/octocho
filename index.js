@@ -6,6 +6,7 @@ ejecta.include("src/geom.js");
 ejecta.include("src/entities/Cube.js");
 ejecta.include("src/entities/Peep.js");
 ejecta.include("src/entities/Ladder.js");
+ejecta.include("src/Level.js");
 ejecta.include("src/main.js");
 
 var container = document.createElement( 'div' );

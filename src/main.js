@@ -16,8 +16,6 @@ var octocho = {
 
         this.level = new Level().init();
 
-        console.log(this.level);
-
         this.bindInput();
         this.makeAScene();
 
@@ -104,12 +102,19 @@ var octocho = {
             path3: THREE.ImageUtils.loadTexture('res/path-3.png'),
             pathEdge: THREE.ImageUtils.loadTexture('res/path-edge.png'),
             ladder: THREE.ImageUtils.loadTexture('res/ladder.png'),
-            nm: THREE.ImageUtils.loadTexture("res/path-1-nm.png")
+            nm: THREE.ImageUtils.loadTexture("res/path-1-nm.png"),
+            a: THREE.ImageUtils.loadTexture("res/a.png"),
+            b: THREE.ImageUtils.loadTexture("res/b.png"),
+            c: THREE.ImageUtils.loadTexture("res/c.png"),
+            d: THREE.ImageUtils.loadTexture("res/d.png"),
+            e: THREE.ImageUtils.loadTexture("res/e.png"),
+            f: THREE.ImageUtils.loadTexture("res/f.png"),
+            g: THREE.ImageUtils.loadTexture("res/g.png"),
+            h: THREE.ImageUtils.loadTexture("res/h.png"),
+            i: THREE.ImageUtils.loadTexture("res/i.png")
         };
 
         //this.nm = THREE.ImageUtils.loadTexture("res/path-1-nm.png");
-
-
         this.materials.ladder.wrapS = THREE.RepeatWrapping;
         this.materials.ladder.repeat.y = 1;
 

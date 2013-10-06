@@ -24,18 +24,20 @@ Peep.prototype = {
         return this;
     },
 
-    tick: function () {
-        this.x += this.speed * Math.sin(this.dir * (Math.PI / 180));
-        this.z += this.speed * Math.cos(this.dir * (Math.PI / 180));
+    tick: function (cube) {
+        var xo = this.speed * Math.sin(this.dir * (Math.PI / 180)),
+            zo = this.speed * Math.cos(this.dir * (Math.PI / 180));
 
-        if (this.x < -0.5 || this.x > 0.5) {
-            this.x = this.x < 0 ? -0.45 : 0.45;
+        if (this.x + xo < -0.5 || this.x + xo > 0.5) {
             this.dir = Math.random() * 360 | 0;
+            xo = 0;
         }
-        if (this.z < -0.5 || this.z > 0.5) {
-            this.z = this.z < 0 ? -0.45 : 0.45;
+        if (this.z + zo < -0.5 || this.z + zo > 0.5) {
             this.dir = Math.random() * 360 | 0;
+            zo = 0;
         }
+        this.x += xo;
+        this.z += zo;
         this.sync();
     },
 
