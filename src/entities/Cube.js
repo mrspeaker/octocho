@@ -4,6 +4,13 @@ var CELLS = {
     "on": 1
 };
 
+var DIRS = {
+    "north": 0,
+    "east": 1,
+    "south": 2,
+    "west": 3
+};
+
 function Cube(col, id) {
     this.mesh = null;
     this.col = col;
@@ -119,8 +126,19 @@ Cube.prototype = {
         this.sync();
     },
 
-    changePeep: function () {
-
+    changePeep: function (dir, peep, amount) {
+        if (this.ns[dir]) {
+            this.peeps = this.peeps.filter(function (p) {
+                return p !== peep;
+            });
+            this.mesh.remove(peep.mesh);
+            peep.x = 0;
+            peep.z = 0;
+            peep.sync();
+            this.ns[dir].addPeep(peep);
+            return;
+        }
+        peep.dir = Math.random() * 360 | 0;
     },
 
    /* propagate: function (cubeNs) {

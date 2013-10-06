@@ -28,14 +28,35 @@ Peep.prototype = {
         var xo = this.speed * Math.sin(this.dir * (Math.PI / 180)),
             zo = this.speed * Math.cos(this.dir * (Math.PI / 180));
 
-        if (this.x + xo < -0.5 || this.x + xo > 0.5) {
+        if (this.x + xo < -0.5) {
+            cube.changePeep(DIRS.west, this, xo);
+            return;
+        }
+
+        if (this.x + xo > 0.5) {
+            cube.changePeep(DIRS.east, this, xo);
+            return;
+        }
+
+        if (this.z + zo < -0.5) {
+            cube.changePeep(DIRS.north, this, zo);
+            return;
+        }
+
+        if (this.z + zo > 0.5) {
+            cube.changePeep(DIRS.south, this, zo);
+            return;
+        }
+
+        /*if (this.x + xo < -0.5 || this.x + xo > 0.5) {
             this.dir = Math.random() * 360 | 0;
             xo = 0;
         }
         if (this.z + zo < -0.5 || this.z + zo > 0.5) {
             this.dir = Math.random() * 360 | 0;
             zo = 0;
-        }
+        }*/
+
         this.x += xo;
         this.z += zo;
         this.sync();

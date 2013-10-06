@@ -42,11 +42,11 @@ Level.prototype = {
                     //if (k > 0) ns.push(this.cubes[k - 1][j][i]);
                     //if (k < 2) ns.push(this.cubes[k + 1][j][i]);
 
-                    if (z > 0) ns[2] = this.cubes[x][y][z - 1];
-                    if (x < 2) ns[3] = this.cubes[x + 1][y][z];
+                    if (z > 0) ns[DIRS.north] = this.cubes[x][y][z - 1];
+                    if (x < 2) ns[DIRS.east] = this.cubes[x + 1][y][z];
 
-                    if (z < 2) ns[4] = this.cubes[x][y][z + 1];
-                    if (x > 0) ns[5] = this.cubes[x - 1][y][z];
+                    if (z < 2) ns[DIRS.south] = this.cubes[x][y][z + 1];
+                    if (x > 0) ns[DIRS.west] = this.cubes[x - 1][y][z];
 
 
                     this.cubes[x][y][z].ns = ns;
