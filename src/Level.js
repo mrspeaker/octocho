@@ -34,7 +34,11 @@ Level.prototype = {
                     col = geom.colHSL((x * 3 + y * 3 + z) / 27, 0.8, Math.random());
                     cube = new Cube(col, id++).init(x - 1, y - 1, z - 1);
 
-                    this.addPeep(new Peep(col).init(cube));
+                    //if (id === 1) {
+                        var peep = new Peep(col).init(cube);
+                        this.addPeep(peep);
+                        cube.addPeep(peep);
+                    //}
 
                     if (y < 2 && Math.random() < 0.2) {
                         cube.addThing(new Ladder().init());
@@ -85,6 +89,15 @@ Level.prototype = {
         this.mesh.remove(peep.mesh);
     },
 
+    getCubeFromWorldPos: function (pos) {
+
+        var x = pos.x + 1.5 | 0,
+            y = pos.y + 1.5 | 0,
+            z = pos.z + 1.5 | 0;
+
+        return this.cubes[x][y][z];
+    },
+
     tick: function () {
         for (var x = 0; x < 3; x++) {
             for (var y = 0; y < 3; y++) {
@@ -95,8 +108,21 @@ Level.prototype = {
         }
 
         this.peeps.forEach(function (p) {
+            var oldPos = geom.vec3().copy(p.pos);
             p.tick();
-        });
+            var cube = this.getCubeFromWorldPos(p.pos);
+            if (cube !== p.cube) {
+                if (cube.rot.z !== 0) {
+                    p.pos.copy(oldPos);
+                    p.dir = Math.random() * (Math.PI * 2);
+                } else {
+                    p.cube.removePeep(p);
+                    cube.addPeep(p);
+                    p.cube = cube;
+                }
+            }
+
+        }, this);
     }
 
 };
