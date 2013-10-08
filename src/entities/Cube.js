@@ -3,9 +3,7 @@ function Cube(col, id) {
     this.col = col;
     this.id = id;
 
-    this.rotX = 0;
-    this.rotY = 0;
-    this.rotZ = 0;
+    this.rot = null;
 
 };
 
@@ -14,7 +12,12 @@ Cube.prototype = {
     init: function (x, y, z) {
         this.pos = x + ":" + y + ":" + z;
 
-        this.worldPos = new THREE.Vector3(x, y, z);
+        this.pos = geom.vec3(x, y, z);
+        this.rot = geom.vec3(0, 0, 0);
+
+        this.mat = new THREE.Matrix4();
+        this.mat.makeRotationY(5 * (Math.PI / 180));
+
         this.things = [];
 
         this.createMesh(x, y, z);
@@ -58,9 +61,9 @@ Cube.prototype = {
 
         if (this.rotating-- > 0) {
             if(this.rotateAxis) {
-                this.rotY = (this.rotY + this.rotateAmount) % (Math.PI * 2);
+                this.rot.y = (this.rot.y + this.rotateAmount) % (Math.PI * 2);
             } else {
-                this.rotZ = (this.rotZ + this.rotateAmount) % (Math.PI * 2);
+                this.rot.z = (this.rot.z + this.rotateAmount) % (Math.PI * 2);
             }
         }
 
@@ -76,7 +79,7 @@ Cube.prototype = {
         this.rotateAxis = blnY ? true : false;
 
         if (!blnY) {
-            if (this.rotZ > 0) {
+            if (this.rot.z > 0) {
                 this.rotateAmount = -this.rotateAmount;
             }
         }
@@ -84,6 +87,6 @@ Cube.prototype = {
     },
 
     sync: function () {
-        this.mesh.rotation.set(this.rotX, this.rotY, this.rotZ);
+        this.mesh.rotation.set(this.rot.x, this.rot.y, this.rot.z);
     }
 };
