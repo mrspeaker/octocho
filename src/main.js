@@ -5,10 +5,9 @@ var octocho = {
     downAt: null,
 
     init: function (dom) {
-
         this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 100);
         //this.camera.position.set(3.3, 1.2, 4);
-        this.camera.position.set(0, 0, 4);
+        this.camera.position.set(-1, -1, 4);
         //this.camera.rotation.set(-0.3, 0.67, 0.18);
 
         this.controls = new THREE.OrbitControls(this.camera);
@@ -36,7 +35,6 @@ var octocho = {
     },
 
     bindInput: function () {
-
         var self = this;
 
         this.controls.addEventListener('change', function (c) {});
@@ -66,11 +64,9 @@ var octocho = {
                 self.rotateCube(hit);
             }
         }, false);
-
     },
 
     run: function () {
-
         this.update();
         this.render();
 
@@ -126,7 +122,6 @@ var octocho = {
     },
 
     makeAScene: function () {
-
         this.scene = new THREE.Scene();
 
         for (var x = 0; x < 3; x++) {
@@ -134,10 +129,12 @@ var octocho = {
                 for (var z = 0; z < 3; z++) {
                     var cube = this.level.cubes[x][y][z];
                     this.cubeMeshes.push(cube.base);
-                    this.scene.add(cube.mesh);
+                    this.level.mesh.add(cube.mesh);
                 }
             }
         }
+
+        this.scene.add(this.level.mesh);
 
         var ambientLight = new THREE.AmbientLight(0x774444);
         this.scene.add(ambientLight);
@@ -145,7 +142,6 @@ var octocho = {
         var directionalLight = new THREE.DirectionalLight(0xffffff);
         directionalLight.position.set(0.1, 0.3, 0.1).normalize();
         this.scene.add(directionalLight);
-
     },
 
     rotateCube: function (hit, blnX) {
@@ -166,8 +162,6 @@ var octocho = {
     },
 
     render: function () {
-
         this.renderer.render(this.scene, this.camera);
-
     }
 };

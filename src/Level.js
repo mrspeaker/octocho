@@ -1,13 +1,20 @@
+var DIRS = {
+    "north": 0,
+    "east": 1,
+    "south": 2,
+    "west": 3
+};
+
 function Level () {
     this.cubes = null;
-    this.epoch = Date.now();
-    this.graph;
-
+    this.peeps = null;
 };
 Level.prototype = {
 
     init: function () {
         this.cubes = [];
+        this.peeps = [];
+
         var id = 0;
 
         for (var x = 0; x < 3; x++) {
@@ -21,7 +28,7 @@ Level.prototype = {
                     cube.connectsTo = [
                         [x - 1, y - 1, z + 1]
                     ];
-                    cube.addPeep(new Peep(col).init());
+                    //if (id === 7) cube.addPeep(new Peep(col).init());
 
                     if (y < 2 && Math.random() < 0.2) {
                         cube.addThing(new Ladder().init());
@@ -54,94 +61,61 @@ Level.prototype = {
             }
         }
 
+        this.createMesh();
+
+
+        this.addPeep(new Peep(col).init());
+        this.addPeep(new Peep(col).init());
+        this.addPeep(new Peep(col).init());
+        this.addPeep(new Peep(col).init());
+
         return this;
     },
 
-    updateGraph: function () {
+    createMesh: function () {
 
-        var cubes = this.cubes,
-            x,
-            y,
-            z,
-            xl = cubes.length,
-            yl = cubes[0].length,
-            zl = cubes[0][0].length,
-            cube,
-            cx,
-            cy,
-            cz,
-            cxl,
-            cyl,
-            czl,
-            state;
-
-
-        for (x = 0; x < xl; x++) {
-            for (y = 0; y < yl; y++) {
-                for (z = 0; z < xl; z++) {
-                    cube = this.cubes[x][y][z];
-                    cxl = cube.graph.length;
-                    cyl = cube.graph[0].length;
-                    czl = cube.graph[0][0].length;
-                    for (cx = 0; cx < cxl; cx++) {
-                        for (cy = 0; cy < cyl; cy++) {
-                            for (cz = 0; cz < czl; cz++) {
-                                state = cube.graph[cx][cy][cz];
-                                this.graph[x][y][z][cx][cy][cz] = state;
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        this.mesh = geom.container(geom.vec3(0, 0, 0));
 
     },
 
+    addPeep: function (peep) {
+        this.peeps.push(peep);
+        this.mesh.add(peep.mesh);
+    },
+
+    removePeep: function (peep) {
+        this.peeps = this.peeps.filter(function (p) {
+            return p !== peep;
+        });
+        this.mesh.remove(peep.mesh);
+    },
+
     tick: function () {
-
-        var epoch = false;
-        if ((Date.now() - this.epoch > 3000)) {
-            this.epoch = Date.now();
-            epoch = true;
-        }
-
-        if (epoch) {
-            // cubes x
-            // cubes y
-            // cubes z
-                // cells x
-                // cells y
-                // cells z
-        }
-
         for (var x = 0; x < 3; x++) {
             this.cubes.push([]);
             for (var y = 0; y < 3; y++) {
                 this.cubes[x].push([]);
                 for (var z = 0; z < 3; z++) {
+                    var ns = [null, null, null, null, null, null];
 
-                    if (epoch) {
-                        var ns = [null, null, null, null, null, null];
+                    //if (k > 0) ns.push(this.cubes[k - 1][j][i]);
+                    //if (k < 2) ns.push(this.cubes[k + 1][j][i]);
 
-                        //if (k > 0) ns.push(this.cubes[k - 1][j][i]);
-                        //if (k < 2) ns.push(this.cubes[k + 1][j][i]);
+                    if (z > 0) ns[2] = this.cubes[x][y][z - 1];
+                    if (x < 2) ns[3] = this.cubes[x + 1][y][z];
 
-                        if (z > 0) ns[2] = this.cubes[x][y][z - 1];
-                        if (x < 2) ns[3] = this.cubes[x + 1][y][z];
-
-                        if (z < 2) ns[4] = this.cubes[x][y][z + 1];
-                        if (x > 0) ns[5] = this.cubes[x - 1][y][z];
+                    if (z < 2) ns[4] = this.cubes[x][y][z + 1];
+                    if (x > 0) ns[5] = this.cubes[x - 1][y][z];
 
 
-                        this.cubes[x][y][z].tick(ns)
-                    } else {
-                        this.cubes[x][y][z].tick();
-                    }
-
+                    this.cubes[x][y][z].tick(ns)
                 }
             }
         }
 
+        this.peeps.forEach(function (p) {
+            p.tick();
+        });
     }
 
 };
