@@ -9,26 +9,32 @@ function Level () {
     this.cubes = null;
     this.peeps = null;
 };
+
 Level.prototype = {
 
     init: function () {
+        var id = 0,
+            x,
+            y,
+            z,
+            col,
+            cube,
+            ns;
+
         this.cubes = [];
         this.peeps = [];
 
-        var id = 0;
+        this.createMesh();
 
-        for (var x = 0; x < 3; x++) {
+        for (x = 0; x < 3; x++) {
             this.cubes.push([]);
-            for (var y = 0; y < 3; y++) {
+            for (y = 0; y < 3; y++) {
                 this.cubes[x].push([]);
-                for (var z = 0; z < 3; z++) {
-                    var col = geom.colHSL((x * 3 + y * 3 + z) / 27, 0.8, Math.random()),
-                        cube = new Cube(col, id++).init(x - 1, y - 1, z - 1);
+                for (z = 0; z < 3; z++) {
+                    col = geom.colHSL((x * 3 + y * 3 + z) / 27, 0.8, Math.random());
+                    cube = new Cube(col, id++).init(x - 1, y - 1, z - 1);
 
-                    cube.connectsTo = [
-                        [x - 1, y - 1, z + 1]
-                    ];
-                    //if (id === 7) cube.addPeep(new Peep(col).init());
+                    this.addPeep(new Peep(col).init(cube));
 
                     if (y < 2 && Math.random() < 0.2) {
                         cube.addThing(new Ladder().init());
@@ -39,12 +45,11 @@ Level.prototype = {
             }
         }
 
+        // Set the cube's neighbours
         for (x = 0; x < 3; x++) {
-            this.cubes.push([]);
             for (y = 0; y < 3; y++) {
-                this.cubes[x].push([]);
                 for (z = 0; z < 3; z++) {
-                    var ns = [null, null, null, null, null, null];
+                    ns = [null, null, null, null, null, null];
 
                     //if (k > 0) ns.push(this.cubes[k - 1][j][i]);
                     //if (k < 2) ns.push(this.cubes[k + 1][j][i]);
@@ -61,21 +66,11 @@ Level.prototype = {
             }
         }
 
-        this.createMesh();
-
-
-        this.addPeep(new Peep(col).init());
-        this.addPeep(new Peep(col).init());
-        this.addPeep(new Peep(col).init());
-        this.addPeep(new Peep(col).init());
-
         return this;
     },
 
     createMesh: function () {
-
         this.mesh = geom.container(geom.vec3(0, 0, 0));
-
     },
 
     addPeep: function (peep) {
@@ -92,23 +87,9 @@ Level.prototype = {
 
     tick: function () {
         for (var x = 0; x < 3; x++) {
-            this.cubes.push([]);
             for (var y = 0; y < 3; y++) {
-                this.cubes[x].push([]);
                 for (var z = 0; z < 3; z++) {
-                    var ns = [null, null, null, null, null, null];
-
-                    //if (k > 0) ns.push(this.cubes[k - 1][j][i]);
-                    //if (k < 2) ns.push(this.cubes[k + 1][j][i]);
-
-                    if (z > 0) ns[2] = this.cubes[x][y][z - 1];
-                    if (x < 2) ns[3] = this.cubes[x + 1][y][z];
-
-                    if (z < 2) ns[4] = this.cubes[x][y][z + 1];
-                    if (x > 0) ns[5] = this.cubes[x - 1][y][z];
-
-
-                    this.cubes[x][y][z].tick(ns)
+                    this.cubes[x][y][z].tick();
                 }
             }
         }

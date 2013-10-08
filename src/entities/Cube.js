@@ -4,7 +4,6 @@ function Cube(col, id) {
     this.id = id;
 
     this.rot = null;
-
 };
 
 Cube.prototype = {
