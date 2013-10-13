@@ -5,6 +5,24 @@ var DIRS = {
     "west": 3
 };
 
+var WORLD = [
+    [
+        [2,3,5],
+        [3,1,3],
+        [4,3,4]
+    ],
+    [
+        [2,4,5],
+        [3,1,4],
+        [4,4,4]
+    ],
+    [
+        [2,3,6],
+        [3,1,3],
+        [4,3,5]
+    ]
+];
+
 function Level () {
     this.cubes = null;
     this.peeps = null;
@@ -32,13 +50,13 @@ Level.prototype = {
                 this.cubes[x].push([]);
                 for (z = 0; z < 3; z++) {
                     col = geom.colHSL((x * 3 + y * 3 + z) / 27, 0.8, Math.random());
-                    cube = new Cube(col, id++).init(x - 1, y - 1, z - 1);
+                    cube = new Cube(col, id++).init(x - 1, y - 1, z - 1, WORLD[y][x][z]);
 
-                    //if (id === 1) {
+                    if (id === 17) {
                         var peep = new Peep(col).init(cube);
                         this.addPeep(peep);
                         cube.addPeep(peep);
-                    //}
+                    }
 
                     if (y < 2 && Math.random() < 0.2) {
                         cube.addThing(new Ladder().init());
@@ -121,7 +139,6 @@ Level.prototype = {
                     p.cube = cube;
                 }
             }
-
         }, this);
     }
 

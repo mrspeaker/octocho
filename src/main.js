@@ -7,7 +7,7 @@ var octocho = {
     init: function (dom) {
         this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 100);
         //this.camera.position.set(3.3, 1.2, 4);
-        this.camera.position.set(-1, -1, 4);
+        this.camera.position.set(0, 0, 4);
         //this.camera.rotation.set(-0.3, 0.67, 0.18);
 
         this.controls = new THREE.OrbitControls(this.camera);
@@ -47,7 +47,7 @@ var octocho = {
                 hit = self.rayCast(pos[0], pos[1]);
 
             if (hit.length) {
-                self.rotateCube(hit, true);
+                self.rotateCube(hit);
             }
         }, false);
 
@@ -61,7 +61,7 @@ var octocho = {
                 hit = self.rayCast(pos[0], pos[1]);
 
             if (hit.length) {
-                self.rotateCube(hit);
+                self.rotateCube(hit, true);
             }
         }, false);
     },
@@ -96,18 +96,12 @@ var octocho = {
             path1: THREE.ImageUtils.loadTexture('res/path-1.png'),
             path2: THREE.ImageUtils.loadTexture('res/path-2.png'),
             path3: THREE.ImageUtils.loadTexture('res/path-3.png'),
+            path4: THREE.ImageUtils.loadTexture('res/path-4.png'),
+            path5: THREE.ImageUtils.loadTexture('res/path-5.png'),
+            path6: THREE.ImageUtils.loadTexture('res/path-6.png'),
             pathEdge: THREE.ImageUtils.loadTexture('res/path-edge.png'),
             ladder: THREE.ImageUtils.loadTexture('res/ladder.png'),
-            nm: THREE.ImageUtils.loadTexture("res/path-1-nm.png"),
-            a: THREE.ImageUtils.loadTexture("res/a.png"),
-            b: THREE.ImageUtils.loadTexture("res/b.png"),
-            c: THREE.ImageUtils.loadTexture("res/c.png"),
-            d: THREE.ImageUtils.loadTexture("res/d.png"),
-            e: THREE.ImageUtils.loadTexture("res/e.png"),
-            f: THREE.ImageUtils.loadTexture("res/f.png"),
-            g: THREE.ImageUtils.loadTexture("res/g.png"),
-            h: THREE.ImageUtils.loadTexture("res/h.png"),
-            i: THREE.ImageUtils.loadTexture("res/i.png")
+            nm: THREE.ImageUtils.loadTexture("res/path-1-nm.png")
         };
 
         //this.nm = THREE.ImageUtils.loadTexture("res/path-1-nm.png");

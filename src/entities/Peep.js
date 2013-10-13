@@ -8,15 +8,22 @@ function Peep(col) {
 
     this.dir = 0;
     this.mesh = null;
+
+    this.cellX = 0;
+    this.cellZ = 0;
 };
 
 Peep.prototype = {
+
+    pickDir: function () {
+        return [0, 90, 180, 270][Math.random() * 4 | 0] * (Math.PI / 180);
+    },
 
     init: function (cube) {
         this.mesh = geom.peep(this);
         this.cube = cube;
 
-        this.dir = Math.random() * (Math.PI * 2);
+        this.dir = this.pickDir();
         this.speed = (Math.random() * 0.003) + 0.001;
         this.pos = geom.vec3(
             cube.pos.x,
@@ -29,33 +36,26 @@ Peep.prototype = {
     },
 
     tick: function () {
-
-        // var m = new THREE.Matrix4();
-        // //m.makeTranslation(0, 2, 0);
-        // m.setPosition(this.pos);
-        // m.makeRotationY(this.dir * (Math.PI / 180));
-        // m.makeScale(1.01,0,1.01);
-
-        // this.pos.applyMatrix4(m);
-
-        // this.sync();
-        // return;
-
-
         var xo = this.speed * Math.sin(this.dir),
             zo = this.speed * Math.cos(this.dir),
             pos = this.pos;
 
         this.rot.y = this.dir;
 
-
-        if (pos.x + xo < -1.5 || pos.x + xo > 1.5) {
-            this.dir = Math.random() * 360 | 0;
-            xo = 0;
+        var cellX = Math.floor((pos.x + xo) * 3),
+            cellZ = Math.floor((pos.z + zo) * 3);
+        if (cellX !== this.cellX || cellZ !== this.cellZ) {
+            this.cellX = cellX;
+            this.cellZ = cellZ;
+            console.log(cellX, cellZ)
         }
 
+        if (pos.x + xo < -1.5 || pos.x + xo > 1.5) {
+            this.dir = this.pickDir();
+            xo = 0;
+        }
         if (pos.z + zo < -1.5 || pos.z + zo > 1.5) {
-            this.dir = Math.random() * 360 | 0;
+            this.dir = this.pickDir();
             zo = 0;
         }
 
