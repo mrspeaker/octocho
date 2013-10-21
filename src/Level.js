@@ -14,8 +14,22 @@ var PATHS = {
     CUL: [0, 1, 0, 1, 1, 0, 0, 0, 0],
     CUR: [0, 1, 0, 0, 1, 1, 0, 0, 0],
     CDL: [0, 0, 0, 1, 1, 0, 0, 1, 0],
-    CDR: [0, 0, 0, 0, 1, 1, 0, 1, 0]
+    CDR: [0, 0, 0, 0, 1, 1, 0, 1, 0],
+    idx: ["X", "TL", "TR", "TU", "TD", "CUL", "CUR", "CDL", "CDR"]
 };
+
+var PATHNAMES = {
+    X: 0,
+    TL: 1,
+    TR: 2,
+    TU: 3,
+    TD: 4,
+    CUL: 5,
+    CUR: 6,
+    CDL: 7,
+    CDR: 8
+};
+
 
 var WORLD = [
     [
@@ -64,11 +78,11 @@ Level.prototype = {
                     col = geom.colHSL((x * 3 + y * 3 + z) / 27, 0.8, Math.random());
                     cube = new Cube(col, id++).init(x - 1, y - 1, z - 1, WORLD[2 - y][z][x]);
 
-                    if (id === 17) {
+                    //if (id === 17) {
                         var peep = new Peep(col).init(cube);
                         this.addPeep(peep);
                         cube.addPeep(peep);
-                    }
+                    //}
 
                     if (y < 2 && Math.random() < 0.2) {
                         cube.addThing(new Ladder().init());

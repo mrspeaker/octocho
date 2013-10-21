@@ -39,7 +39,8 @@ Peep.prototype = {
         var xo = this.speed * Math.sin(this.dir),
             zo = this.speed * Math.cos(this.dir),
             pos = this.pos,
-            oldPos = geom.vec3().copy(pos);
+            oldPos = geom.vec3().copy(pos),
+            oldCube = this.cube;
 
         this.rot.y = this.dir;
 
@@ -52,31 +53,44 @@ Peep.prototype = {
             zo = 0;
         }
 
-        var cellX = Math.round((pos.x + xo) * 3) - (this.cube.pos.x * 3),
-            cellZ = Math.round((pos.z + zo) * 3) - (this.cube.pos.z * 3);
-        if (cellX !== this.cellX || cellZ !== this.cellZ) {
-            this.cellX = cellX;
-            this.cellZ = cellZ;
-            console.log(cellX, cellZ);
-            // Get the cell from the cube
-            // if 1, ok to go
-            // else - if one exit, go that way
-            // else - if two exits, random?
-            // else - go backwards
-        }
-
         this.pos.add(geom.vec3(xo, 0, zo));
 
-        var newCube = level.getCubeFromWorldPos(pos);
-        if (newCube !== this.cube) {
+        var newCube = level.getCubeFromWorldPos(pos),
+            changed = newCube !== this.cube,
+            updateCubeGuys = false;
+
+        if (changed) {
             if (newCube.rot.z !== 0) {
                 this.pos.copy(oldPos);
                 this.dir = Math.random() * (Math.PI * 2);
             } else {
-                this.cube.removePeep(this);
-                newCube.addPeep(this);
-                this.cube = newCube;
+                updateCubeGuys = true;
             }
+        }
+
+        var cellX = Math.round((pos.x) * 3) - (newCube.pos.x * 3),
+            cellZ = Math.round((pos.z) * 3) - (newCube.pos.z * 3);
+        if (cellX !== this.cellX || cellZ !== this.cellZ) {
+            // Get the cell from the cube
+            var road = newCube.paths[(cellX + 1) + ((cellZ + 1) * 3)];
+            // if 1, ok to go
+            if (road && !(cellX === 0 && cellZ === 0)) {
+                this.cellX = cellX;
+                this.cellZ = cellZ;
+            } else  {
+                // else - if one exit, go that way
+                // else - if two exits, random?
+                // else - go backwards
+                this.pos.copy(oldPos);
+                this.dir = this.pickDir();
+                updateCubeGuys = false;
+            }
+        }
+
+        if (updateCubeGuys) {
+            oldCube.removePeep(this);
+            newCube.addPeep(this);
+            this.cube = newCube;
         }
 
         this.sync();

@@ -125,8 +125,10 @@ var octocho = {
             for (var y = 0; y < 3; y++) {
                 for (var z = 0; z < 3; z++) {
                     var cube = this.level.cubes[x][y][z];
-                    this.cubeMeshes.push(cube.base);
-                    this.level.mesh.add(cube.mesh);
+                    if (cube) {
+                        this.cubeMeshes.push(cube.base);
+                        this.level.mesh.add(cube.mesh);
+                    }
                 }
             }
         }
