@@ -6,11 +6,17 @@ var octocho = {
 
     init: function (dom) {
         this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 100);
+        //this.camera = new THREE.CombinedCamera( window.innerWidth / 2, window.innerHeight / 2, 70, 1, 1000, - 500, 1000 );
+
+        this.camera2 = new THREE.OrthographicCamera( -2, 2, 2, -2, 1, 1000);
         //this.camera.position.set(3.3, 1.2, 4);
+        //this.camera2.setZoom(0.4);
         this.camera.position.set(0, 0, 4);
+        this.camera2.position.set(0, 0, 4);
         //this.camera.rotation.set(-0.3, 0.67, 0.18);
 
         this.controls = new THREE.OrbitControls(this.camera);
+        this.controls2 = new THREE.OrbitControls(this.camera2);
         this.loadMaterials();
 
         this.level = new Level().init();
@@ -78,6 +84,7 @@ var octocho = {
     update: function () {
 
         this.controls.update();
+        this.controls2.update();
         this.level.tick();
 
     },
@@ -157,10 +164,30 @@ var octocho = {
         ray = new THREE.Raycaster(this.camera.position, vector.sub(this.camera.position).normalize());
         intersects = ray.intersectObjects(this.cubeMeshes, true);
 
+        /*var vector = new THREE.Vector3(
+    ( event.clientX / window.innerWidth ) * 2 - 1,
+    - ( event.clientY / window.innerHeight ) * 2 + 1,
+    0.5 );
+
+// use picking ray since it's an orthographic camera
+var ray = projector.pickingRay( vector, camera );
+
+var intersects = ray.intersectObjects( objects );
+
+if ( intersects.length > 0 ) {
+
+    console.log( intersects[ 0 ] );
+
+}*/
+
         return intersects;
     },
 
     render: function () {
-        this.renderer.render(this.scene, this.camera);
+        if (((Date.now() / 2000) | 0) % 2) {
+            this.renderer.render(this.scene, this.camera);
+        } else {
+               this.renderer.render(this.scene, this.camera2);
+        }
     }
 };
