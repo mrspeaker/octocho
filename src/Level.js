@@ -5,21 +5,33 @@ var DIRS = {
     "west": 3
 };
 
+var PATHS = {
+    X: [0, 1, 0, 1, 1, 1, 0, 1, 0],
+    TL: [0, 1, 0, 1, 1, 0, 0, 1, 0],
+    TR: [0, 1, 0, 0, 1, 1, 0, 1, 0],
+    TU: [0, 1, 0, 1, 1, 1, 0, 0, 0],
+    TD: [0, 0, 0, 1, 1, 1, 0, 1, 0],
+    CUL: [0, 1, 0, 1, 1, 0, 0, 0, 0],
+    CUR: [0, 1, 0, 0, 1, 1, 0, 0, 0],
+    CDL: [0, 0, 0, 1, 1, 0, 0, 1, 0],
+    CDR: [0, 0, 0, 0, 1, 1, 0, 1, 0]
+};
+
 var WORLD = [
     [
-        [2,3,5],
-        [3,1,3],
-        [4,3,4]
+        [8,4,7],
+        [2,0,1],
+        [6,3,5]
     ],
     [
         [2,4,5],
-        [3,1,4],
+        [3,0,4],
         [4,4,4]
     ],
     [
-        [2,3,6],
-        [3,1,3],
-        [4,3,5]
+        [8,5,7],
+        [2,0,1],
+        [1,3,6]
     ]
 ];
 
@@ -50,7 +62,7 @@ Level.prototype = {
                 this.cubes[x].push([]);
                 for (z = 0; z < 3; z++) {
                     col = geom.colHSL((x * 3 + y * 3 + z) / 27, 0.8, Math.random());
-                    cube = new Cube(col, id++).init(x - 1, y - 1, z - 1, WORLD[y][x][z]);
+                    cube = new Cube(col, id++).init(x - 1, y - 1, z - 1, WORLD[2 - y][z][x]);
 
                     if (id === 17) {
                         var peep = new Peep(col).init(cube);
@@ -125,21 +137,10 @@ Level.prototype = {
             }
         }
 
+        var self = this;
         this.peeps.forEach(function (p) {
-            var oldPos = geom.vec3().copy(p.pos);
-            p.tick();
-            var cube = this.getCubeFromWorldPos(p.pos);
-            if (cube !== p.cube) {
-                if (cube.rot.z !== 0) {
-                    p.pos.copy(oldPos);
-                    p.dir = Math.random() * (Math.PI * 2);
-                } else {
-                    p.cube.removePeep(p);
-                    cube.addPeep(p);
-                    p.cube = cube;
-                }
-            }
-        }, this);
+            p.tick(self);
+        });
     }
 
 };

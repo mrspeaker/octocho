@@ -93,15 +93,18 @@ var octocho = {
         }
 
         this.materials = {
+            path0: THREE.ImageUtils.loadTexture('res/path-0.png'),
             path1: THREE.ImageUtils.loadTexture('res/path-1.png'),
             path2: THREE.ImageUtils.loadTexture('res/path-2.png'),
             path3: THREE.ImageUtils.loadTexture('res/path-3.png'),
             path4: THREE.ImageUtils.loadTexture('res/path-4.png'),
             path5: THREE.ImageUtils.loadTexture('res/path-5.png'),
             path6: THREE.ImageUtils.loadTexture('res/path-6.png'),
+            path7: THREE.ImageUtils.loadTexture('res/path-7.png'),
+            path8: THREE.ImageUtils.loadTexture('res/path-8.png'),
             pathEdge: THREE.ImageUtils.loadTexture('res/path-edge.png'),
             ladder: THREE.ImageUtils.loadTexture('res/ladder.png'),
-            nm: THREE.ImageUtils.loadTexture("res/path-1-nm.png")
+            nm: THREE.ImageUtils.loadTexture("res/path-0-nm.png")
         };
 
         //this.nm = THREE.ImageUtils.loadTexture("res/path-1-nm.png");

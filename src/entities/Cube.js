@@ -1,3 +1,4 @@
+
 function Cube(col, id) {
     this.mesh = null;
     this.col = col;
@@ -8,6 +9,7 @@ Cube.prototype = {
 
     init: function (x, y, z, typ) {
         this.typ = typ;
+        this.paths = PATHS[typ];
         this.pos = geom.vec3(x, y, z);
         this.rot = geom.vec3(0, 0, 0);
 
@@ -33,7 +35,7 @@ Cube.prototype = {
             mats = ["pathEdge", "pathEdge", texture, texture, "pathEdge", "pathEdge"]
                 .map(function (m) {
                     var opt = {map: octocho.materials[m]}
-                    if (m === "path1") {
+                    if (m === "path0") {
                         opt.normalMap = octocho.materials.nm
                     }
 

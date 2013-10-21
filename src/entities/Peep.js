@@ -35,20 +35,13 @@ Peep.prototype = {
         return this;
     },
 
-    tick: function () {
+    tick: function (level) {
         var xo = this.speed * Math.sin(this.dir),
             zo = this.speed * Math.cos(this.dir),
-            pos = this.pos;
+            pos = this.pos,
+            oldPos = geom.vec3().copy(pos);
 
         this.rot.y = this.dir;
-
-        var cellX = Math.floor((pos.x + xo) * 3),
-            cellZ = Math.floor((pos.z + zo) * 3);
-        if (cellX !== this.cellX || cellZ !== this.cellZ) {
-            this.cellX = cellX;
-            this.cellZ = cellZ;
-            console.log(cellX, cellZ)
-        }
 
         if (pos.x + xo < -1.5 || pos.x + xo > 1.5) {
             this.dir = this.pickDir();
@@ -59,7 +52,33 @@ Peep.prototype = {
             zo = 0;
         }
 
+        var cellX = Math.round((pos.x + xo) * 3) - (this.cube.pos.x * 3),
+            cellZ = Math.round((pos.z + zo) * 3) - (this.cube.pos.z * 3);
+        if (cellX !== this.cellX || cellZ !== this.cellZ) {
+            this.cellX = cellX;
+            this.cellZ = cellZ;
+            console.log(cellX, cellZ);
+            // Get the cell from the cube
+            // if 1, ok to go
+            // else - if one exit, go that way
+            // else - if two exits, random?
+            // else - go backwards
+        }
+
         this.pos.add(geom.vec3(xo, 0, zo));
+
+        var newCube = level.getCubeFromWorldPos(pos);
+        if (newCube !== this.cube) {
+            if (newCube.rot.z !== 0) {
+                this.pos.copy(oldPos);
+                this.dir = Math.random() * (Math.PI * 2);
+            } else {
+                this.cube.removePeep(this);
+                newCube.addPeep(this);
+                this.cube = newCube;
+            }
+        }
+
         this.sync();
     },
 
